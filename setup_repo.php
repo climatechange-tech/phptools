@@ -12,25 +12,15 @@
 // Input parameters //
 //------------------//
 
-// Server array containing some key paths (localhost) //
-$server_arr = $_SERVER;
-
 // Home path //
-$home_path = $server_arr["HOME"];
+$home_path = "/home/jonander";
 
 // Default path (same as the current one) 
 $default_path = getcwd();
 
-// Path establisher function replica //
-$custom_path_establisher_func = "function return_custom_path() {
-    custom_path = '%s' <br>
-    return custom_path; <br>
-}
-";
-
-// Repo path retriever file attributes //
-$custom_path_retriever_name = "get_phptools_path.php";
-$custom_path_retriever_path = $home_path . "/" . $custom_path_retriever_name;
+// File and its absolute path that contains the customised repo path //
+$custom_path_container_name = "get_phptools_path.php";
+$custom_path_container_path = $home_path . "/" . $custom_path_container_name;
 
 //------------------//
 // Define functions //
@@ -91,14 +81,14 @@ function copy_entire_directories($source_directories, $destination_directories) 
 
 if (isset($_POST["save"])) {
 
-	$custom_path = $_REQUEST["custom_path"];
-	lcp = strlen($custom_path)
+	$fixed_path = $_REQUEST["custom_path"];
+	lcp = strlen($fixed_path)
 
 	// If the default path is left written, then set the path to the default one //
 	//---------------------------------------------------------------------------//
 
-	if ($custom_path == $default_path) {
-		$custom_path = $default_path;
+	if ($fixed_path == $default_path) {
+		$fixed_path = $default_path;
 	}
 		
 	// Otherwise, move the repo to the specified path //
@@ -108,15 +98,15 @@ if (isset($_POST["save"])) {
 		
 		// Define custom path with the directory as the current, default one //
 		$default_dir = basename($default_path);
-		$customPathWithDefaultDir = $custom_path . "/". $default_dir; 		
+		$customPathWithDefaultDir = $fixed_path . "/". $default_dir; 		
 		
 		$copy_stat = copy_entire_directories($default_path, $customPathWithDefaultDir)
 		
 		if ($copy_stat === True) {
-			printf("Path changed from '%s' to '%s'", $default_path, $custom_path);
+			printf("Path changed from '%s' to '%s'", $default_path, $fixed_path);
 		}
 		else 
-			printf("<span style='color:red'>Could not change path from '%s' to '%s'</span>", $default_path, $custom_path);
+			printf("<span style='color:red'>Could not change path from '%s' to '%s'</span>", $default_path, $fixed_path);
 			
 		chdir("$default_path/..")
 		$remove_stat = remove_entire_directories($default_path)
@@ -139,9 +129,9 @@ All modules are optimized so that the file that returns the path of this repo
 is stored at /home directory.
 """
 
-$custom_path_retriever = fopen($custom_path_retriever_path,'w');
-fwrite(sprintf($custom_path_establisher_func, $custom_path));
-fclose($custom_path_retriever);
+$custom_path_container = fopen($custom_path_container_path,'w');
+fwrite($fixed_path);
+fclose($custom_path_container);
 
 ?>
 

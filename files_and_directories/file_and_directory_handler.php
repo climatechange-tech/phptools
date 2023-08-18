@@ -19,21 +19,18 @@ $phptools_finder_path = $home_path . "/" . $phptools_finder_file;
 
 // Perform the importation //
 include($phptools_finder_path);
-fixed_dirpath = return_custom_path();
 
-// Enumerate custom modules and their paths //
-//------------------------------------------//
+// Import custom modules //
+//-----------------------//
 
-$custom_mod_path = $fixed_dirpath . "/" . "files_and_directories";
+// Enumerate the custom modules and their paths //
+$custom_mod_path = $fixed_path . "/" . "files_and_directories";
 
-// Perform the custom module importations //
-//----------------------------------------//
-
+// Enumerate the files associated with these custom modules and their paths //
 $custom_mod_file = $custom_mod_path . "/" . "file_and_directory_paths.php";
+
+// Perform the importations //
 include($custom_mod_file);
-
-
-
 
 //------------------//
 // Define functions //
@@ -252,8 +249,6 @@ function copy_entire_directories($source_directories,
     }
             
     else {
-    
-    	$cp_command = "cp -rv '%s'/* '%s'";
     	
     	if (gettype($source_directories) === "array" and gettype($destination_directories) === "array") {
             foreach ($source_directories as $sd) {
@@ -429,9 +424,8 @@ function rename_objects($relative_paths,
         $len_rf = count($renaming_relative_paths)
         
         if ($len_files != $len_rf) {
-			print("<span style='color:red'>Files and renaming file lists "
+			die("<span style='color:red'>Files and renaming file lists "
 				  "are not of the same length.</span>");
-			exit;
 		}
          	  
         else {
@@ -450,17 +444,20 @@ function rename_objects($relative_paths,
     }
                 
     else {
-        print("<span style='color:red'>Both input arguments must either be "
+        die("<span style='color:red'>Both input arguments must either be "
          	  "strings or lists simultaneously.</span>");
-		exit;
 	}                    
 }
 
-//--------------------------------------------------------//
-// Get the directory from where this code is being called //
-//--------------------------------------------------------//
+//------------------//
+// Local parameters //
+//------------------//
 
+// Get the directory from where this code is being called //
 $cwd = getcwd();
-$alldoc_dirpath = dirname($fixed_dirpath);
+$alldoc_dirpath = dirname($fixed_path);
+
+// Bash 'cp' command //
+$cp_command = "cp -rv %s/* %s";
 
 ?>
