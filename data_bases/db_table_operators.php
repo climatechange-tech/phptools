@@ -1,6 +1,5 @@
 <?php
 
-
 function generic_mysql_command($connection, $mysql_syntax) {
 	$mysql_comm = mysqli_query($connection, $mysql_syntax);
 	// $connection->query($mysql_syntax);	
@@ -9,16 +8,11 @@ function generic_mysql_command($connection, $mysql_syntax) {
 
 function create_table($connection, $new_table, $nameAndDTypeClause) {
 	$createTableSyn = "CREATE TABLE $new_table ($nameAndDTypeClause);";
-				
-//	$createTableSyn = "CREATE TABLE $new_table (Izena VARCHAR(20) COLLATE utf8mb4_bin,
-//												  Lehen_abizena VARCHAR(20) COLLATE utf8mb4_bin,
-//												  Posta_elektronikoa VARCHAR(60) COLLATE utf8mb4_bin, 
-//												  Pasahitza VARCHAR(30) COLLATE utf8mb4_bin, 
-//												  Herrialdea VARCHAR(30) COLLATE utf8mb4_bin,
-//												  Probintzia VARCHAR(25) COLLATE utf8mb4_bin,
-//												  Herria VARCHAR(30) COLLATE utf8mb4_bin, 
-//												  Posta_kodea INT,
-//												  Erosketa_data DATE)";
+	
+	/*
+	  For case-sensitive columns, after specifying the column name and data type,
+	  use 'COLLATE utf8mb4_bin'.
+	*/
 
 	$createTableComm = generic_mysql_command($connection, $createTableSyn);
 	return $createTableComm;
@@ -60,7 +54,8 @@ function select_from_table($connection,
 						   $fetcheable,
 						   $table,
 						   $where_clause=NULL,
-						   $groupby_clause=NULL) {
+						   $groupby_clause=NULL,
+						   $return_syntax_str_only=False) {
 	
 	if ($where_clause && $groupby_clause) {
 		$selFromTableSyn = "SELECT $fetcheable FROM $table WHERE $where_clause GROUP BY $groupby_clause";		
@@ -77,15 +72,20 @@ function select_from_table($connection,
 	else {
 		$selFromTableSyn = "SELECT $fetcheable FROM $table";		
 	}
-
-	$filteredData = generic_mysql_command($connection, $selFromTableSyn);
-	return $filteredData;
+	
+	if ($return_syntax_str_only) {
+		return $selFromTableSyn;
+	}
+	else {
+		$filteredData = generic_mysql_command($connection, $selFromTableSyn);
+		return $filteredData;
+	}
 }
 
 function fetch_field_from_table($selectedData, $single_field_name) {
 	while ($row = mysqli_fetch_array($selectedData)) {
-			$field = $row[$single_field_name];
-			$table_field_array[] = $field;
+		$field = $row[$single_field_name];
+		$table_field_array[] = $field;
 	}
 	
 	$array_length = count($table_field_array);
@@ -134,7 +134,7 @@ function delete_values_from_table($connection,
 		$delRowSyn = "DELETE FROM $table";
 	}
 	
-	$delRowComm = generic_mysql_command($delRowSyn);
+	$delRowComm = generic_mysql_command($connection, $delRowSyn);
 	return $delRowComm;
 }
 								  
@@ -142,9 +142,24 @@ function delete_values_from_table($connection,
 function add_column_to_table($connection,
 							 $table,
 							 $newColName,
-							 $dtypeNewCol) {
-							  
-	$addColSyn = "ALTER TABLE $table ADD $newColName $dtypeNewCol";
+							 $dtypeNewCol,
+							 $first_position=False,
+							 $after_what_column=NULL) {
+							 
+							 
+	if ($first_position && !$after_what_column){
+		$addColSyn = "ALTER TABLE $table ADD $newColName $dtypeNewCol FIRST";
+	}
+	
+	else if (!$first_position && $after_what_column) {
+		$addColSyn = "ALTER TABLE $table ADD $newColName $dtypeNewCol AFTER $after_what_column";
+	}
+							 
+	else {
+		die("<p style='color:red'>You must choose between to include
+								  on the first position or after a column.</p>");
+	}
+	
 	$addColComm = generic_mysql_command($connection, $addColSyn);
 	return $addColComm;
 	
@@ -183,8 +198,9 @@ function change_column_data_type($connection,
 }
 
 function copy_table_by_fields($connection,
-							  $fetcheable,
 							  $source_table,
+							  $fetcheable,
+							  $new_table,
 							  $where_clause=NULL,
 							  $groupby_clause=NULL) {
 	
@@ -192,9 +208,10 @@ function copy_table_by_fields($connection,
 									     $fetcheable,
 									     $source_table,
 									     $where_clause=NULL,
-									     $groupby_clause=NULL);
+									     $groupby_clause=NULL,
+									     $return_syntax_str_only=True);
 									     
-	$copyTableSyn = "CREATE TABLE AS '$selFromTableSyn'";
+	$copyTableSyn = "CREATE TABLE $new_table AS $selFromTableSyn";
 	$copyTableComm = generic_mysql_command($connection, $copyTableSyn);
 	return $copyTableComm;
 

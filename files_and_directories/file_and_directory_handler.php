@@ -7,11 +7,8 @@
 // Import module that finds PHP tools' path //
 //------------------------------------------//
 
-// Server array containing some key paths (localhost) //
-$server_arr = $_SERVER;
-
 // Home path //
-$home_path = $server_arr["HOME"];
+$home_path = "/home/jonander";
 
 // Define the tool finder file path //
 $phptools_finder_file =  "get_phptools_path.php";
@@ -111,9 +108,9 @@ def copy_files(source_files, destination_directories):
 // Operations involving directories //
 //----------------------------------//
 
-function make_parent_directories($directory_list) {
+function make_parent_directories(string|array $directory_list) {
    
-    if (gettype(directory_list === "string")):
+    if (gettype(directory_list == "string")):
         $directory_list = array($directory_list);
         
     foreach ($directory_list as $dir) {
@@ -124,7 +121,7 @@ function make_parent_directories($directory_list) {
 }
 
 
-function copy_entire_directories($source_directories, $destination_directories) {
+function copy_entire_directories(string|array $source_directories, string|array $destination_directories) {
 	
 	if (file_exists($destination_directories)) {
 		remove_entire_directories($destination_directories);
@@ -146,14 +143,14 @@ function copy_entire_directories($source_directories, $destination_directories) 
 }
 
         
-function copy_entire_directories($source_directories,
-		                         $destination_directories,
-		                         $files_only=False,
-		                         $recursive_in_depth=True) {
+function copy_entire_directories(string|array $source_directories,
+		                         string|array $destination_directories,
+		                         bool $files_only=False,
+		                         bool $recursive_in_depth=True) {
     
-    if ($files_only === False) {
+    if (!$files_only) {
         
-        if (gettype(directories) === "array" and gettype($destination_directories) === "array") {
+        if (gettype(directories) == "array" and gettype($destination_directories) == "array") {
         	foreach ($source_directories as $sd) {
             	foreach ($destination_directories as $dd) {
                     
@@ -179,7 +176,7 @@ function copy_entire_directories($source_directories,
 		}
                         
                     
-        else if (gettype($source_directories) === "array" and gettype($destination_directories) !== "array"):
+        else if (gettype($source_directories) == "array" and gettype($destination_directories) != "array"):
 
 			if (file_exists($destination_directories)) {
 				remove_entire_directories($destination_directories);
@@ -204,7 +201,7 @@ function copy_entire_directories($source_directories,
 			}
                 
            
-        else if (gettype($source_directories) !== "array" and gettype($destination_directories) === "array") {        
+        else if (gettype($source_directories) != "array" and gettype($destination_directories) == "array") {        
         	foreach ($destination_directories as $dd) {
                 
                 if (file_exists($dd)) {
@@ -250,7 +247,7 @@ function copy_entire_directories($source_directories,
             
     else {
     	
-    	if (gettype($source_directories) === "array" and gettype($destination_directories) === "array") {
+    	if (gettype($source_directories) == "array" and gettype($destination_directories) == "array") {
             foreach ($source_directories as $sd) {
 				foreach ($destination_directories as $dd) {
                     echo shell_exec(sprintf($cp_command, $sd, $dd));
@@ -258,13 +255,13 @@ function copy_entire_directories($source_directories,
             }
         }
         
-        else if (gettype($source_directories) === "array" and gettype($destination_directories) !== "array") {
+        else if (gettype($source_directories) == "array" and gettype($destination_directories) != "array") {
             foreach ($source_directories as $sd) {
                 echo shell_exec(sprintf($cp_command, $sd, $destination_directories));
             }
         }
                     
-        else if (gettype($source_directories) !== "array" and gettype($destination_directories) !== "array") {
+        else if (gettype($source_directories) != "array" and gettype($destination_directories) != "array") {
 			foreach ($destination_directories as $dd) {
                 echo shell_exec(sprintf($cp_command, $source_directories, $dd));
             }
@@ -276,9 +273,9 @@ function copy_entire_directories($source_directories,
     }        
 }
 
-function remove_entire_directories($directories) {
+function remove_entire_directories(string|array $directories) {
 
-	if (gettype($directories) === "string") {
+	if (gettype($directories) == "string") {
 		$directories = array($directories);
 	}
 	
@@ -299,6 +296,7 @@ function remove_entire_directories($directories) {
 	}
 } 
 
+/*
 
 def rsync(source_paths,
           destination_paths,
@@ -325,7 +323,6 @@ def rsync(source_paths,
             zsh_command = f"rsync -{mode} '{sp}'/* '{dp}'"
             os.system(zsh_command)
     
-/*
 def move_entire_directories(directories, destination_directories):
     
     if isinstance(directories, list)\
@@ -377,8 +374,8 @@ def move_entire_directories(directories, destination_directories):
 // Operations involving both files and directories //
 //-------------------------------------------------//
 
-function rename_objects($relative_paths,
-                   		$renaming_relative_paths) {
+function rename_objects(string|array $relative_paths,
+                   		string|array $renaming_relative_paths) {
 
     /*
     
@@ -418,7 +415,7 @@ function rename_objects($relative_paths,
           
     */
     
-    if (gettype($relative_paths) === "array") and gettype($renaming_relative_paths) === "array") {
+    if (gettype($relative_paths) == "array") and gettype($renaming_relative_paths) == "array") {
         
         $len_files = count($relative_paths)
         $len_rf = count($renaming_relative_paths)
@@ -439,7 +436,7 @@ function rename_objects($relative_paths,
         }   
     }
     
-    else if (gettype($relative_paths) !== "array") and gettype($renaming_relative_paths) !== "array") {
+    else if (gettype($relative_paths) != "array") and gettype($renaming_relative_paths) != "array") {
         rename($relative_paths, $renaming_relative_paths)
     }
                 
